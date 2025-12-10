@@ -1,0 +1,82 @@
+/* ChoiceButton styles - Gothic button with blood-red accents */
+
+.button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(
+    to right,
+    rgba(139, 0, 0, 0.3) 0%,
+    rgba(13, 13, 13, 0.6) 100%
+  );
+  border: 1px solid #8B0000;
+  border-left: 3px solid #8B0000;
+  border-radius: 0;
+  cursor: pointer;
+  font-family: 'Georgia', serif;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  background: linear-gradient(
+    to right,
+    rgba(139, 0, 0, 0.5) 0%,
+    rgba(139, 0, 0, 0.2) 100%
+  );
+  border-color: #B22222;
+  transform: translateX(4px);
+}
+
+.button:focus {
+  outline: none;
+}
+
+.button:focus-visible {
+  outline: 2px solid #B22222;
+  outline-offset: 2px;
+}
+
+.button:active {
+  transform: translateX(2px);
+  background: rgba(139, 0, 0, 0.6);
+}
+
+.index {
+  color: #8B0000;
+  font-weight: bold;
+  font-size: 0.9rem;
+  min-width: 1.5rem;
+}
+
+.text {
+  color: #F5F5F0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Touch-friendly sizing on mobile */
+@media (max-width: 768px) {
+  .button {
+    padding: 1rem;
+    min-height: 48px; /* Touch target size */
+  }
+
+  .text {
+    font-size: 0.95rem;
+  }
+}
+
+/* Hover only on devices that support it */
+@media (hover: none) {
+  .button:hover {
+    transform: none;
+    background: linear-gradient(
+      to right,
+      rgba(139, 0, 0, 0.3) 0%,
+      rgba(13, 13, 13, 0.6) 100%
+    );
+  }
+}

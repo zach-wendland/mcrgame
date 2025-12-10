@@ -1,0 +1,66 @@
+/* Global App styles */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  background-color: #0D0D0D;
+  color: #F5F5F0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Prevent text selection during gameplay */
+  user-select: none;
+  -webkit-user-select: none;
+
+  /* Prevent iOS bounce scrolling */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Disable tap highlight on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  outline: 2px solid #8B0000;
+  outline-offset: 2px;
+}
+
+/* Smooth scrolling where needed */
+.scrollable {
+  scroll-behavior: smooth;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 400;
+}
+
+/* Color variables for consistency */
+:root {
+  --color-black: #0D0D0D;
+  --color-white: #F5F5F0;
+  --color-sepia: #704214;
+  --color-blood: #8B0000;
+  --color-bone: #FFF8DC;
+}
+
+/* Mobile viewport fix */
+@supports (height: 100dvh) {
+  html, body, #root {
+    height: 100dvh;
+  }
+}
