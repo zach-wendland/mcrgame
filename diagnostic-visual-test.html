@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Background Rendering Diagnostic</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .test-container {
+      margin-bottom: 30px;
+      border: 2px solid #444;
+      padding: 10px;
+      background: #2a2a2a;
+    }
+    .test-title {
+      color: #8B0000;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .scene-test {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+      background-color: #0D0D0D;
+      border: 2px solid #8B0000;
+      margin-bottom: 10px;
+    }
+    .background {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.1) 30%,
+        rgba(0, 0, 0, 0.1) 70%,
+        rgba(0, 0, 0, 0.5) 100%
+      );
+      pointer-events: none;
+    }
+    .info {
+      background: #1a1a1a;
+      padding: 10px;
+      font-size: 12px;
+      font-family: monospace;
+      border-left: 3px solid #8B0000;
+      margin-top: 10px;
+    }
+    .success { color: #00ff00; }
+    .error { color: #ff0000; }
+    .warning { color: #ffaa00; }
+    button {
+      background: #8B0000;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      margin: 5px;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #a01010;
+    }
+    #liveTest {
+      display: none;
+      margin-top: 20px;
+    }
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: 3px solid #8B0000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Background Rendering Diagnostic Tool</h1>
+  <p>This tool tests whether the SVG backgrounds are rendering correctly.</p>
+
+  <div class="test-container">
+    <div class="test-title">Test 1: Draag Stadium Background (Direct SVG)</div>
+    <div class="scene-test" id="test1">
+      <div class="background" id="bg1"></div>
+      <div class="overlay"></div>
+    </div>
+    <div class="info" id="info1">Initializing...</div>
+  </div>
+
+  <div class="test-container">
+    <div class="test-title">Test 2: Parade Memory Background (Direct SVG)</div>
+    <div class="scene-test" id="test2">
+      <div class="background" id="bg2"></div>
+      <div class="overlay"></div>
+    </div>
+    <div class="info" id="info2">Initializing...</div>
+  </div>
+
+  <div class="test-container">
+    <div class="test-title">Test 3: Pierrot Confrontation Background (Direct SVG)</div>
+    <div class="scene-test" id="test3">
+      <div class="background" id="bg3"></div>
+      <div class="overlay"></div>
+    </div>
+    <div class="info" id="info3">Initializing...</div>
+  </div>
+
+  <div class="test-container">
+    <div class="test-title">Live Application Test</div>
+    <button onclick="toggleLiveTest()">Load Game in IFrame</button>
+    <div id="liveTest">
+      <iframe src="http://localhost:5173"></iframe>
+      <div class="info">
+        The game should be visible above. Check if backgrounds are rendering.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // These are the exact backgrounds from App.tsx
+    const DRAAG_BG = `data:image/svg+xml,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#1a1a2e"/>
+      <stop offset="0.5" stop-color="#16213e"/>
+      <stop offset="1" stop-color="#0f0f0f"/>
+    </linearGradient>
+    <radialGradient id="spotlight1" cx="30%" cy="0%">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="spotlight2" cx="70%" cy="0%">
+      <stop offset="0" stop-color="#8B0000" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#8B0000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect fill="url(#sky)" width="1920" height="1080"/>
+  <polygon fill="url(#spotlight1)" points="576,0 400,1080 750,1080"/>
+  <polygon fill="url(#spotlight2)" points="1344,0 1170,1080 1520,1080"/>
+  <path fill="#252530" d="M0,400 L0,1080 L1920,1080 L1920,400 Q1700,350 960,380 Q220,350 0,400"/>
+  <rect fill="#1a1a1a" x="560" y="750" width="800" height="200" rx="5"/>
+  <rect fill="#8B0000" opacity="0.3" x="560" y="750" width="800" height="10"/>
+</svg>
+`)}`;
+
+    const PARADE_BG = `data:image/svg+xml,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="sepia2" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#8B7355"/>
+      <stop offset="0.5" stop-color="#704214"/>
+      <stop offset="1" stop-color="#3d2914"/>
+    </linearGradient>
+    <radialGradient id="warmGlow2" cx="50%" cy="30%">
+      <stop offset="0" stop-color="#FFF8DC" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#FFF8DC" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect fill="url(#sepia2)" width="1920" height="1080"/>
+  <ellipse fill="url(#warmGlow2)" cx="960" cy="300" rx="700" ry="300"/>
+  <rect fill="#5a4a3a" x="200" y="100" width="250" height="700"/>
+  <rect fill="#6b5a4a" x="1470" y="100" width="250" height="700"/>
+  <rect fill="#D4AF37" opacity="0.3" x="0" y="750" width="1920" height="330"/>
+</svg>
+`)}`;
+
+    const PIERROT_BG = `data:image/svg+xml,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <radialGradient id="redVoid2" cx="50%" cy="50%">
+      <stop offset="0" stop-color="#4a0000"/>
+      <stop offset="0.3" stop-color="#2a0000"/>
+      <stop offset="1" stop-color="#0a0000"/>
+    </radialGradient>
+    <radialGradient id="spotlight3" cx="50%" cy="40%">
+      <stop offset="0" stop-color="#8B0000" stop-opacity="0.6"/>
+      <stop offset="0.3" stop-color="#8B0000" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect fill="url(#redVoid2)" width="1920" height="1080"/>
+  <ellipse fill="url(#spotlight3)" cx="960" cy="500" rx="600" ry="400"/>
+  <path fill="#1a0a0a" d="M0,800 Q480,750 960,780 Q1440,810 1920,760 L1920,1080 L0,1080 Z"/>
+  <ellipse fill="#0a0000" cx="960" cy="500" rx="80" ry="150"/>
+</svg>
+`)}`;
+
+    function testBackground(bgData, elementId, infoId, name) {
+      const bgElement = document.getElementById(elementId);
+      const infoElement = document.getElementById(infoId);
+
+      try {
+        // Apply the background
+        bgElement.style.backgroundImage = `url(${bgData})`;
+
+        // Check if it was applied
+        const computed = window.getComputedStyle(bgElement);
+        const bgImage = computed.backgroundImage;
+
+        let status = '';
+        if (bgImage === 'none') {
+          status = `<span class="error">FAILED: Background image is 'none'</span>`;
+        } else if (bgImage.includes('data:image/svg+xml')) {
+          status = `<span class="success">SUCCESS: Background applied correctly</span>`;
+        } else {
+          status = `<span class="warning">WARNING: Unexpected background value</span>`;
+        }
+
+        infoElement.innerHTML = `
+          <strong>${name} Test Results:</strong><br>
+          ${status}<br>
+          <strong>Background Image:</strong> ${bgImage.substring(0, 100)}...<br>
+          <strong>Data URI Length:</strong> ${bgData.length} characters<br>
+          <strong>Background Size:</strong> ${computed.backgroundSize}<br>
+          <strong>Background Position:</strong> ${computed.backgroundPosition}<br>
+          <strong>Opacity:</strong> ${computed.opacity}
+        `;
+      } catch (e) {
+        infoElement.innerHTML = `<span class="error">ERROR: ${e.message}</span>`;
+      }
+    }
+
+    function toggleLiveTest() {
+      const liveTest = document.getElementById('liveTest');
+      liveTest.style.display = liveTest.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Run tests
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        testBackground(DRAAG_BG, 'bg1', 'info1', 'Draag Stadium');
+        testBackground(PARADE_BG, 'bg2', 'info2', 'Parade Memory');
+        testBackground(PIERROT_BG, 'bg3', 'info3', 'Pierrot Confrontation');
+      }, 100);
+    });
+  </script>
+</body>
+</html>

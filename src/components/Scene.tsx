@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import type { SceneId, DialogueSequence, DialogueChoice } from '@/types/game';
+import type { SceneId, DialogueSequence, DialogueChoice, DialogueNode } from '@/types/game';
 import { useDialogue } from '@/hooks/useDialogue';
 import { DialogueBox } from './DialogueBox';
 import { audioManager } from '@/utils/audioManager';
@@ -12,6 +12,7 @@ import styles from './Scene.module.css';
 interface SceneProps {
   sceneId: SceneId;
   backgroundImage: string;
+  backgroundClass?: string;
   dialogue: DialogueSequence | null;
   music?: string;
   ambientSound?: string;
@@ -23,6 +24,7 @@ interface SceneProps {
 export const Scene: React.FC<SceneProps> = ({
   sceneId,
   backgroundImage,
+  backgroundClass = '',
   dialogue,
   music,
   ambientSound,
@@ -32,6 +34,14 @@ export const Scene: React.FC<SceneProps> = ({
 }) => {
   const [isTransitioning, setIsTransitioning] = useState(true);
   const [currentBg, setCurrentBg] = useState(backgroundImage);
+
+  // Memoize the node change callback to prevent infinite loops
+  const handleNodeChange = useCallback((node: DialogueNode | null) => {
+    // Play sound effects from dialogue
+    if (node?.effect?.playSound) {
+      audioManager.playSfx(node.effect.playSound);
+    }
+  }, []);
 
   // Handle dialogue
   const {
@@ -44,12 +54,7 @@ export const Scene: React.FC<SceneProps> = ({
   } = useDialogue(dialogue, {
     onSequenceEnd: onSceneEnd,
     onChoiceMade,
-    onNodeChange: (node) => {
-      // Play sound effects from dialogue
-      if (node?.effect?.playSound) {
-        audioManager.playSfx(node.effect.playSound);
-      }
-    }
+    onNodeChange: handleNodeChange
   });
 
   // Scene transition effect
@@ -86,13 +91,13 @@ export const Scene: React.FC<SceneProps> = ({
 
   return (
     <div
-      className={`${styles.scene} ${isTransitioning ? styles.transitioning : ''}`}
+      className={`${styles.scene} ${isTransitioning ? styles.transitioning : ''} ${backgroundClass ? `bg-${backgroundClass}` : ''}`}
       data-scene-id={sceneId}
     >
       {/* Background */}
       <div
         className={styles.background}
-        style={{ backgroundImage: `url(${currentBg})` }}
+        style={currentBg ? { backgroundImage: `url(${currentBg})` } : undefined}
         aria-hidden="true"
       />
 

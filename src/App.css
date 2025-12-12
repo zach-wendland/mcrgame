@@ -64,3 +64,111 @@ h1, h2, h3, h4, h5, h6 {
     height: 100dvh;
   }
 }
+
+/* ========================================
+   SCENE BACKGROUNDS - CSS Gradients
+   ======================================== */
+
+/* Draag Stadium - Concrete brutalism, searchlights, dark atmosphere */
+.bg-draag {
+  background:
+    /* Searchlight beam left (white) */
+    linear-gradient(
+      105deg,
+      transparent 25%,
+      rgba(255, 255, 255, 0.08) 28%,
+      rgba(255, 255, 255, 0.12) 30%,
+      rgba(255, 255, 255, 0.08) 32%,
+      transparent 35%
+    ),
+    /* Searchlight beam right (red) */
+    linear-gradient(
+      75deg,
+      transparent 65%,
+      rgba(139, 0, 0, 0.1) 68%,
+      rgba(139, 0, 0, 0.15) 70%,
+      rgba(139, 0, 0, 0.1) 72%,
+      transparent 75%
+    ),
+    /* Stage glow */
+    radial-gradient(
+      ellipse 60% 30% at 50% 85%,
+      rgba(139, 0, 0, 0.4) 0%,
+      rgba(139, 0, 0, 0.2) 40%,
+      transparent 70%
+    ),
+    /* Stadium wall/crowd area */
+    linear-gradient(
+      to bottom,
+      transparent 35%,
+      #1a1a20 35%,
+      #1f1f25 50%,
+      #252530 65%,
+      #1a1a1a 80%
+    ),
+    /* Sky gradient */
+    linear-gradient(
+      to bottom,
+      #1a1a2e 0%,
+      #16213e 30%,
+      #0f0f1a 60%,
+      #0a0a0f 100%
+    );
+}
+
+/* Parade Memory - Warm sepia, hospital golden light */
+.bg-parade {
+  background:
+    /* Window light glow */
+    radial-gradient(
+      ellipse 40% 35% at 50% 25%,
+      rgba(255, 248, 220, 0.5) 0%,
+      rgba(255, 215, 0, 0.3) 30%,
+      rgba(218, 165, 32, 0.15) 60%,
+      transparent 100%
+    ),
+    /* Floor/lower wall */
+    linear-gradient(
+      to bottom,
+      transparent 55%,
+      #5c4a3a 55%,
+      #4a3a2e 75%,
+      #3d2e22 100%
+    ),
+    /* Base sepia gradient */
+    linear-gradient(
+      to bottom,
+      #8B7355 0%,
+      #704214 50%,
+      #5a3510 100%
+    );
+}
+
+/* Pierrot Confrontation - Dark void, red spotlight, sinister */
+.bg-pierrot {
+  background:
+    /* Central red spotlight */
+    radial-gradient(
+      ellipse 50% 40% at 50% 45%,
+      rgba(139, 0, 0, 0.5) 0%,
+      rgba(100, 0, 0, 0.3) 30%,
+      rgba(50, 0, 0, 0.15) 60%,
+      transparent 100%
+    ),
+    /* Ground plane */
+    linear-gradient(
+      to bottom,
+      transparent 70%,
+      #1a0505 70%,
+      #120303 85%,
+      #0a0000 100%
+    ),
+    /* Red void gradient */
+    radial-gradient(
+      circle at 50% 50%,
+      #3a0000 0%,
+      #2a0000 30%,
+      #150000 60%,
+      #0a0000 100%
+    );
+}

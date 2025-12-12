@@ -14,20 +14,32 @@ export const draagOpeningDialogue: DialogueSequence = {
     {
       id: 'opening-1',
       speaker: 'narrator',
-      text: 'The stadium of Draag stretches before you, vast and gray beneath a colorless sky. Thousands fill the concrete stands, their faces pale, their movements synchronized.',
+      text: 'The Concrete Age. Draag Stadium rises from the gray earth like a monument to forgetting. Sixty thousand souls sit in perfect rows, dressed in regulation gray. The sky above is the color of static.',
       nextDialogueId: 'opening-2',
       effect: { typewriterSpeed: 'slow' }
     },
     {
       id: 'opening-2',
       speaker: 'narrator',
-      text: 'Searchlights sweep across the crowd. Banners bearing the symbol of the Grand Immortal Dictator hang from every pillar.',
+      text: 'Searchlights sweep the crowd in mechanical rhythm. Red and white beams cut through manufactured fog. On every wall, the symbol: a skeletal hand clutching a dying star.',
       nextDialogueId: 'opening-3'
     },
     {
       id: 'opening-3',
       speaker: 'narrator',
-      text: 'A figure emerges onto the central stage. The Clerk. His suit is immaculate, his smile carefully measured.',
+      text: 'The air smells of concrete dust and ozone. In the distance, beyond the walls, you can almost hear it—the MOAT, the chaotic world outside the Dictator\'s order. But here, all is control.',
+      nextDialogueId: 'opening-4'
+    },
+    {
+      id: 'opening-4',
+      speaker: 'narrator',
+      text: 'A figure glides onto the stage. The Clerk. Black suit, white makeup that makes his face a porcelain mask. His smile is painted on, too wide, too perfect. Behind it, nothing.',
+      nextDialogueId: 'opening-5'
+    },
+    {
+      id: 'opening-5',
+      speaker: 'narrator',
+      text: 'Silence stretches. The Clerk lets it build—savoring sixty thousand held breaths like wine. When he finally speaks, his voice carries without amplification, impossibly loud, impossibly intimate.',
       nextDialogueId: 'clerk-1'
     },
 
@@ -35,20 +47,33 @@ export const draagOpeningDialogue: DialogueSequence = {
     {
       id: 'clerk-1',
       speaker: 'the-clerk',
-      text: 'Citizens of Draag! Welcome to this most glorious demonstration of cultural achievement!',
+      text: 'CITIZENS! Welcome, welcome, WELCOME to this most auspicious occasion! The Concrete Age blesses you with spectacle!',
       emotion: 'neutral',
+      nextDialogueId: 'clerk-keposhka'
+    },
+    {
+      id: 'clerk-keposhka',
+      speaker: 'the-clerk',
+      text: 'Velsharik tor mendashra! Keposhka vril!',
+      emotion: 'neutral',
+      nextDialogueId: 'clerk-keposhka-narrator'
+    },
+    {
+      id: 'clerk-keposhka-narrator',
+      speaker: 'narrator',
+      text: 'The words are Keposhka—the Dictator\'s invented tongue. You don\'t understand them, but your body does. It flinches. The language was designed to bypass thought and strike directly at the spine.',
       nextDialogueId: 'clerk-2'
     },
     {
       id: 'clerk-2',
       speaker: 'the-clerk',
-      text: 'His Grand Immortal Dictator, in his infinite wisdom and generosity, has seen fit to grace us with entertainment.',
+      text: 'His Grand Immortal Dictator—glory eternal to his name—has decreed that tonight, you shall witness history. You shall witness MEMORY. You shall witness the return.',
       nextDialogueId: 'clerk-3'
     },
     {
       id: 'clerk-3',
       speaker: 'the-clerk',
-      text: 'Seventeen years ago, a parade was sent to the MOAT. Tonight, by the Dictator\'s decree, that parade returns.',
+      text: 'Seventeen years they marched beyond our walls. Seventeen years in the MOAT, that festering chaos of the past. But the Dictator\'s reach is long. The Parade has been... reclaimed.',
       nextDialogueId: 'crowd-response-1'
     },
 
@@ -74,7 +99,31 @@ export const draagOpeningDialogue: DialogueSequence = {
     {
       id: 'narrator-band',
       speaker: 'narrator',
-      text: 'Figures emerge from the shadows, clad in black military uniforms. Silver trim catches the light. They move with the weariness of those who have performed this ritual countless times.',
+      text: 'Five figures emerge from beneath the stage, rising on hydraulic platforms through clouds of red smoke. Black marching band uniforms, Victorian military cut. Silver epaulettes gleam like bone.',
+      nextDialogueId: 'narrator-band-2'
+    },
+    {
+      id: 'narrator-band-2',
+      speaker: 'narrator',
+      text: 'Their faces are painted—white greasepaint, black circles around the eyes. Death masks. Parade masks. They carry instruments like weapons, and stand at attention like soldiers who forgot how to die.',
+      nextDialogueId: 'narrator-band-3'
+    },
+    {
+      id: 'narrator-band-3',
+      speaker: 'narrator',
+      text: 'The one at center stage is different. Smaller. Fiercer. His jacket is festooned with medals that might be military honors or might be children\'s toys—impossible to tell. His eyes burn through the greasepaint.',
+      nextDialogueId: 'narrator-band-4'
+    },
+    {
+      id: 'narrator-band-4',
+      speaker: 'narrator',
+      text: 'Behind him, a skeletal figure hunches over drums like a carrion bird. To the left, two guitarists stand mirror-image, twins in violence. At the edge, barely visible, a shadow cradles a bass like a sleeping child.',
+      nextDialogueId: 'narrator-band-5'
+    },
+    {
+      id: 'narrator-band-5',
+      speaker: 'narrator',
+      text: 'Something about them is wrong. Not wrong like the Clerk is wrong—calculated, constructed. This is the wrongness of a wound that won\'t close. Of a memory that refuses to die.',
       nextDialogueId: 'clerk-5'
     },
 
@@ -171,28 +220,72 @@ export const draagOpeningDialogue: DialogueSequence = {
     {
       id: 'music-begins',
       speaker: 'narrator',
-      text: 'The first note strikes. A single piano key, hanging in the air like a question. Then drums. Distant at first, like memories of something lost.',
+      text: 'The first note strikes. A single piano key, hanging in the manufactured silence like a last confession. Then drums—marching, funeral, inevitable.',
       effect: { playSound: 'piano-note' },
       nextDialogueId: 'music-2'
     },
     {
       id: 'music-2',
       speaker: 'narrator',
-      text: 'The lead singer steps forward. His eyes, beneath the black and silver of his uniform, hold something the propaganda hasn\'t managed to extinguish.',
+      text: 'The lead singer steps to the microphone. For an instant, beneath the death-mask makeup, his eyes meet yours. And in them, you see it—fear. Recognition. A plea.',
       nextDialogueId: 'music-3'
     },
     {
       id: 'music-3',
       speaker: 'narrator',
-      text: 'He opens his mouth to sing, and for a moment—just a moment—you forget where you are. You remember somewhere else. Someone else.',
-      nextDialogueId: 'transition-to-memory'
+      text: 'He opens his mouth. The first word is a gasp, a breath, a memory surfacing. The guitars crash like waves. The sound splits the Concrete Age open.',
+      nextDialogueId: 'music-4'
+    },
+    {
+      id: 'music-4',
+      speaker: 'narrator',
+      text: 'And suddenly you\'re not here anymore. The stadium dissolves. The gray bleeds into gold, into amber, into sepia photographs of a world that knew color.',
+      nextDialogueId: 'music-5'
+    },
+    {
+      id: 'music-5',
+      speaker: 'narrator',
+      text: 'You smell antiseptic. Hospital flowers. Your mother\'s perfume. The beeping of machines you never want to hear again but never stopped hearing.',
+      nextDialogueId: 'music-6'
+    },
+    {
+      id: 'music-6',
+      speaker: 'narrator',
+      text: 'The singer\'s voice follows you down, down through the layers of forgetting. Not accusing. Not judging. Just... accompanying. Like a friend at a funeral. Like a parade at the end of the world.',
+      effect: { typewriterSpeed: 'slow' },
+      nextDialogueId: 'transition-1'
     },
 
     // Transition to memory scene
     {
+      id: 'transition-1',
+      speaker: 'narrator',
+      text: 'You are falling backward. Through years. Through forgetting.',
+      nextDialogueId: 'transition-2'
+    },
+    {
+      id: 'transition-2',
+      speaker: 'narrator',
+      text: 'You remember a room. White walls. White sheets. A window you couldn\'t reach. A television playing news about a world that no longer mattered.',
+      nextDialogueId: 'transition-3'
+    },
+    {
+      id: 'transition-3',
+      speaker: 'narrator',
+      text: 'You remember being afraid. Not of dying—you\'d made peace with that. Afraid of being forgotten. Afraid it all meant nothing.',
+      nextDialogueId: 'transition-4'
+    },
+    {
+      id: 'transition-4',
+      speaker: 'narrator',
+      text: 'And then—drums. Distant at first, then closer. A parade, coming for you. Death, dressed in your strongest memory, arriving to carry you home.',
+      effect: { typewriterSpeed: 'slow' },
+      nextDialogueId: 'transition-to-memory'
+    },
+    {
       id: 'transition-to-memory',
       speaker: 'narrator',
-      text: 'The stadium fades. The gray concrete dissolves into gold and sepia. You are falling backward through time, to a parade you once attended as a child...',
+      text: 'Back to when you were young, and dying, and a parade came to carry you home...',
       effect: { fadeToBlack: true, typewriterSpeed: 'slow' }
       // No nextDialogueId - scene ends here, triggers transition
     }
