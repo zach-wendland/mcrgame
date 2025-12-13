@@ -6,6 +6,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import type { SceneId, DialogueSequence, DialogueChoice, DialogueNode } from '@/types/game';
 import { useDialogue } from '@/hooks/useDialogue';
 import { DialogueBox } from './DialogueBox';
+import { PixiBackground } from './PixiBackground';
 import { audioManager } from '@/utils/audioManager';
 import styles from './Scene.module.css';
 
@@ -94,7 +95,10 @@ export const Scene: React.FC<SceneProps> = ({
       className={`${styles.scene} ${isTransitioning ? styles.transitioning : ''} ${backgroundClass ? `bg-${backgroundClass}` : ''}`}
       data-scene-id={sceneId}
     >
-      {/* Background */}
+      {/* Pixi.js animated background layer */}
+      <PixiBackground sceneId={sceneId} isActive={!isTransitioning} />
+
+      {/* CSS Background */}
       <div
         className={styles.background}
         style={currentBg ? { backgroundImage: `url(${currentBg})` } : undefined}
