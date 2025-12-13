@@ -195,7 +195,13 @@ describe('Dialogue Sequences', () => {
         'the-clerk',
         'pierrot',
         'crowd',
-        'narrator'
+        'narrator',
+        // Band members
+        'the-lead-singer',
+        'the-drummer',
+        'the-lead-guitarist',
+        'the-rhythm-guitarist',
+        'the-bassist'
       ];
 
       for (const seq of allSequences) {

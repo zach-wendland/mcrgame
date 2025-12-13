@@ -1,13 +1,24 @@
 /**
  * Audio management using Howler.js for The Black Parade: Carry On
+ * Falls back to Web Audio API generated sounds when files don't exist
  */
 
 import { Howl, Howler } from 'howler';
+import { audioGenerator } from './audioGenerator';
 
 interface AudioTrack {
   howl: Howl;
   volume: number;
 }
+
+// Sound effects that will be generated procedurally
+const PROCEDURAL_SFX = [
+  'piano-note',
+  'distant-drums',
+  'blade-draw',
+  'impact',
+  'g-note'
+];
 
 class AudioManager {
   private music: Map<string, AudioTrack> = new Map();
@@ -17,15 +28,29 @@ class AudioManager {
   private musicVolume = 0.7;
   private sfxVolume = 0.8;
   private isMuted = false;
+  private generatorInitialized = false;
 
   constructor() {
     // Attempt to unlock audio on first user interaction (mobile requirement)
     this.setupMobileUnlock();
+    // Initialize the audio generator for procedural sounds
+    this.initGenerator();
+  }
+
+  private async initGenerator(): Promise<void> {
+    try {
+      await audioGenerator.init();
+      this.generatorInitialized = true;
+    } catch (err) {
+      console.warn('Failed to initialize audio generator:', err);
+    }
   }
 
   private setupMobileUnlock(): void {
     const unlock = () => {
       Howler.ctx?.resume();
+      // Also init generator on user interaction
+      this.initGenerator();
       document.removeEventListener('touchstart', unlock);
       document.removeEventListener('click', unlock);
     };
@@ -100,12 +125,34 @@ class AudioManager {
 
   // Play a sound effect
   playSfx(key: string): void {
+    if (this.isMuted) return;
+
     const track = this.sfx.get(key);
-    if (!track) {
-      console.warn(`SFX not found: ${key}`);
+    if (track) {
+      track.howl.play();
       return;
     }
-    track.howl.play();
+
+    // Fall back to procedural audio if no file loaded
+    if (PROCEDURAL_SFX.includes(key)) {
+      this.playProceduralSfx(key);
+      return;
+    }
+
+    console.warn(`SFX not found: ${key}`);
+  }
+
+  // Play procedurally generated sound effect
+  private async playProceduralSfx(key: string): Promise<void> {
+    if (!this.generatorInitialized) {
+      await this.initGenerator();
+    }
+
+    try {
+      await audioGenerator.play(key);
+    } catch (err) {
+      console.warn(`Failed to play procedural SFX: ${key}`, err);
+    }
   }
 
   // Set master volume

@@ -8,6 +8,7 @@ import { useDialogue } from '@/hooks/useDialogue';
 import { DialogueBox } from './DialogueBox';
 import { PixiBackground } from './PixiBackground';
 import { PixiCharacter } from './PixiCharacter';
+import { BandSilhouette } from './BandSilhouette';
 import { audioManager } from '@/utils/audioManager';
 import styles from './Scene.module.css';
 
@@ -154,11 +155,17 @@ export const Scene: React.FC<SceneProps> = ({
 
       {/* Character sprite layer */}
       <div className={styles.characterLayer}>
-        {showCharacter && (
+        {showCharacter ? (
           <PixiCharacter
             characterId={currentSpeaker}
             emotion={currentNode?.emotion}
             isActive={!isTransitioning}
+          />
+        ) : (
+          /* Show band silhouette during narrator sections in scene 1 */
+          <BandSilhouette
+            isActive={!isTransitioning && !showCharacter}
+            sceneId={sceneId}
           />
         )}
       </div>
