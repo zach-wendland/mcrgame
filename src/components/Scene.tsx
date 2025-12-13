@@ -2,10 +2,12 @@
  * Scene - Container component for game scenes with background and transitions
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import type { SceneId, DialogueSequence, DialogueChoice, DialogueNode } from '@/types/game';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import type { SceneId, DialogueSequence, DialogueChoice, DialogueNode, CharacterId } from '@/types/game';
 import { useDialogue } from '@/hooks/useDialogue';
 import { DialogueBox } from './DialogueBox';
+import { PixiBackground } from './PixiBackground';
+import { PixiCharacter } from './PixiCharacter';
 import { audioManager } from '@/utils/audioManager';
 import styles from './Scene.module.css';
 
@@ -34,13 +36,53 @@ export const Scene: React.FC<SceneProps> = ({
 }) => {
   const [isTransitioning, setIsTransitioning] = useState(true);
   const [currentBg, setCurrentBg] = useState(backgroundImage);
+  const [isShaking, setIsShaking] = useState(false);
+  const [isFading, setIsFading] = useState(false);
+  const [currentSpeaker, setCurrentSpeaker] = useState<CharacterId | null>(null);
+  const shakeTimeoutRef = useRef<number | null>(null);
 
   // Memoize the node change callback to prevent infinite loops
   const handleNodeChange = useCallback((node: DialogueNode | null) => {
+    // Update current speaker for character display
+    setCurrentSpeaker(node?.speaker ?? null);
+
     // Play sound effects from dialogue
     if (node?.effect?.playSound) {
       audioManager.playSfx(node.effect.playSound);
     }
+
+    // Trigger screen shake
+    if (node?.effect?.screenShake) {
+      setIsShaking(true);
+      if (shakeTimeoutRef.current) {
+        clearTimeout(shakeTimeoutRef.current);
+      }
+      shakeTimeoutRef.current = window.setTimeout(() => {
+        setIsShaking(false);
+      }, 500);
+    }
+
+    // Trigger fade to black
+    if (node?.effect?.fadeToBlack) {
+      setIsFading(true);
+      // Fade will be cleared on next node or scene transition
+    }
+  }, []);
+
+  // Clear fade when transitioning
+  useEffect(() => {
+    if (isTransitioning) {
+      setIsFading(false);
+    }
+  }, [isTransitioning]);
+
+  // Cleanup shake timeout
+  useEffect(() => {
+    return () => {
+      if (shakeTimeoutRef.current) {
+        clearTimeout(shakeTimeoutRef.current);
+      }
+    };
   }, []);
 
   // Handle dialogue
@@ -89,12 +131,18 @@ export const Scene: React.FC<SceneProps> = ({
     selectChoice(choiceId);
   }, [selectChoice]);
 
+  // Determine which character to show based on current speaker
+  const showCharacter = currentSpeaker && currentSpeaker !== 'narrator' && currentSpeaker !== 'crowd';
+
   return (
     <div
-      className={`${styles.scene} ${isTransitioning ? styles.transitioning : ''} ${backgroundClass ? `bg-${backgroundClass}` : ''}`}
+      className={`${styles.scene} ${isTransitioning ? styles.transitioning : ''} ${isShaking ? styles.shaking : ''} ${backgroundClass ? `bg-${backgroundClass}` : ''}`}
       data-scene-id={sceneId}
     >
-      {/* Background */}
+      {/* Pixi.js animated background layer */}
+      <PixiBackground sceneId={sceneId} isActive={!isTransitioning} />
+
+      {/* CSS Background */}
       <div
         className={styles.background}
         style={currentBg ? { backgroundImage: `url(${currentBg})` } : undefined}
@@ -103,6 +151,17 @@ export const Scene: React.FC<SceneProps> = ({
 
       {/* Overlay for atmosphere */}
       <div className={styles.overlay} aria-hidden="true" />
+
+      {/* Character sprite layer */}
+      <div className={styles.characterLayer}>
+        {showCharacter && (
+          <PixiCharacter
+            characterId={currentSpeaker}
+            emotion={currentNode?.emotion}
+            isActive={!isTransitioning}
+          />
+        )}
+      </div>
 
       {/* Scene content (character sprites, etc.) */}
       <div className={styles.content}>
@@ -120,6 +179,9 @@ export const Scene: React.FC<SceneProps> = ({
           onChoiceSelect={handleChoiceSelect}
         />
       )}
+
+      {/* Fade to black overlay */}
+      <div className={`${styles.fadeOverlay} ${isFading ? styles.active : ''}`} aria-hidden="true" />
     </div>
   );
 };

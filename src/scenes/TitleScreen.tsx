@@ -4,6 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { hasSave, deleteSave } from '@/utils/gameState';
+import { PixiBackground } from '@/components/PixiBackground';
 import styles from './TitleScreen.module.css';
 
 interface TitleScreenProps {
@@ -45,7 +46,10 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
 
   return (
     <div className={styles.container}>
-      {/* Background */}
+      {/* Pixi.js animated background */}
+      <PixiBackground sceneId="title" isActive={true} />
+
+      {/* CSS Background */}
       <div className={styles.background} />
 
       {/* Title */}
