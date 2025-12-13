@@ -7,3 +7,4 @@ export { CharacterName } from './CharacterName';
 export { ChoiceButton } from './ChoiceButton';
 export { Scene } from './Scene';
 export { PixiBackground } from './PixiBackground';
+export { PixiCharacter } from './PixiCharacter';
