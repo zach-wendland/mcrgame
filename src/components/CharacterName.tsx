@@ -18,7 +18,13 @@ const CHARACTER_CONFIG: Record<CharacterId, { name: string; color: string }> = {
   'the-clerk': { name: 'The Clerk', color: '#704214' },
   'pierrot': { name: 'Pierrot', color: '#FFFFFF' },
   'crowd': { name: 'The Crowd', color: '#666666' },
-  'narrator': { name: '', color: 'transparent' }
+  'narrator': { name: '', color: 'transparent' },
+  // The Black Parade Band Members
+  'the-lead-singer': { name: 'The Lead Singer', color: '#CC0000' },
+  'the-drummer': { name: 'The Drummer', color: '#8B0000' },
+  'the-lead-guitarist': { name: 'The Lead Guitarist', color: '#FF3333' },
+  'the-rhythm-guitarist': { name: 'The Rhythm Guitarist', color: '#FF3333' },
+  'the-bassist': { name: 'The Bassist', color: '#660000' }
 };
 
 export const CharacterName: React.FC<CharacterNameProps> = ({

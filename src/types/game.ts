@@ -16,7 +16,13 @@ export type CharacterId =
   | 'the-clerk'
   | 'pierrot'
   | 'crowd'
-  | 'narrator';
+  | 'narrator'
+  // The Black Parade Band Members
+  | 'the-lead-singer'    // Front man, parade leader aesthetic
+  | 'the-drummer'        // Skeletal marching drummer
+  | 'the-lead-guitarist' // Twin guitarist 1
+  | 'the-rhythm-guitarist' // Twin guitarist 2
+  | 'the-bassist';       // Shadow with bass
 
 // Dialogue choice structure
 export interface DialogueChoice {

@@ -106,18 +106,64 @@ export const draagOpeningDialogue: DialogueSequence = {
       id: 'narrator-band-2',
       speaker: 'narrator',
       text: 'Their faces are painted—white greasepaint, black circles around the eyes. Death masks. Parade masks. They carry instruments like weapons, and stand at attention like soldiers who forgot how to die.',
+      nextDialogueId: 'lead-singer-intro'
+    },
+    // Lead Singer introduction
+    {
+      id: 'lead-singer-intro',
+      speaker: 'the-lead-singer',
+      text: '...',
+      emotion: 'neutral',
       nextDialogueId: 'narrator-band-3'
     },
     {
       id: 'narrator-band-3',
       speaker: 'narrator',
       text: 'The one at center stage is different. Smaller. Fiercer. His jacket is festooned with medals that might be military honors or might be children\'s toys—impossible to tell. His eyes burn through the greasepaint.',
+      nextDialogueId: 'drummer-intro'
+    },
+    // Drummer introduction
+    {
+      id: 'drummer-intro',
+      speaker: 'the-drummer',
+      text: '...',
+      emotion: 'neutral',
       nextDialogueId: 'narrator-band-4'
     },
     {
       id: 'narrator-band-4',
       speaker: 'narrator',
-      text: 'Behind him, a skeletal figure hunches over drums like a carrion bird. To the left, two guitarists stand mirror-image, twins in violence. At the edge, barely visible, a shadow cradles a bass like a sleeping child.',
+      text: 'Behind him, a skeletal figure hunches over drums like a carrion bird. To the left, two guitarists stand mirror-image, twins in violence.',
+      nextDialogueId: 'lead-guitarist-intro'
+    },
+    // Lead Guitarist introduction
+    {
+      id: 'lead-guitarist-intro',
+      speaker: 'the-lead-guitarist',
+      text: '...',
+      emotion: 'neutral',
+      nextDialogueId: 'rhythm-guitarist-intro'
+    },
+    // Rhythm Guitarist introduction
+    {
+      id: 'rhythm-guitarist-intro',
+      speaker: 'the-rhythm-guitarist',
+      text: '...',
+      emotion: 'neutral',
+      nextDialogueId: 'bassist-intro'
+    },
+    // Bassist introduction
+    {
+      id: 'bassist-intro',
+      speaker: 'the-bassist',
+      text: '...',
+      emotion: 'neutral',
+      nextDialogueId: 'narrator-band-4b'
+    },
+    {
+      id: 'narrator-band-4b',
+      speaker: 'narrator',
+      text: 'At the edge, barely visible, a shadow cradles a bass like a sleeping child.',
       nextDialogueId: 'narrator-band-5'
     },
     {
@@ -222,18 +268,40 @@ export const draagOpeningDialogue: DialogueSequence = {
       speaker: 'narrator',
       text: 'The first note strikes. A single piano key, hanging in the manufactured silence like a last confession. Then drums—marching, funeral, inevitable.',
       effect: { playSound: 'piano-note' },
+      nextDialogueId: 'drummer-plays'
+    },
+    {
+      id: 'drummer-plays',
+      speaker: 'the-drummer',
+      text: '...',
+      emotion: 'neutral',
+      effect: { playSound: 'distant-drums' },
       nextDialogueId: 'music-2'
     },
     {
       id: 'music-2',
       speaker: 'narrator',
       text: 'The lead singer steps to the microphone. For an instant, beneath the death-mask makeup, his eyes meet yours. And in them, you see it—fear. Recognition. A plea.',
+      nextDialogueId: 'singer-moment'
+    },
+    {
+      id: 'singer-moment',
+      speaker: 'the-lead-singer',
+      text: '...',
+      emotion: 'sad',
       nextDialogueId: 'music-3'
     },
     {
       id: 'music-3',
       speaker: 'narrator',
       text: 'He opens his mouth. The first word is a gasp, a breath, a memory surfacing. The guitars crash like waves. The sound splits the Concrete Age open.',
+      nextDialogueId: 'guitarists-play'
+    },
+    {
+      id: 'guitarists-play',
+      speaker: 'the-lead-guitarist',
+      text: '...',
+      emotion: 'angry',
       nextDialogueId: 'music-4'
     },
     {

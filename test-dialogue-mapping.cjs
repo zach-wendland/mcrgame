@@ -12,8 +12,16 @@ const scene2 = fs.readFileSync(path.join(__dirname, 'src/dialogue/scene2-parade-
 const scene3 = fs.readFileSync(path.join(__dirname, 'src/dialogue/scene3-pierrot-confrontation.ts'), 'utf8');
 
 // Valid character IDs that have pixel art
-const VALID_CHARACTERS = ['narrator', 'the-clerk', 'the-patient', 'death', 'pierrot', 'crowd'];
-const CHARACTERS_WITH_SPRITES = ['the-clerk', 'the-patient', 'death', 'pierrot'];
+const VALID_CHARACTERS = [
+  'narrator', 'the-clerk', 'the-patient', 'death', 'pierrot', 'crowd',
+  // Band members
+  'the-lead-singer', 'the-drummer', 'the-lead-guitarist', 'the-rhythm-guitarist', 'the-bassist'
+];
+const CHARACTERS_WITH_SPRITES = [
+  'the-clerk', 'the-patient', 'death', 'pierrot',
+  // Band members have sprites too
+  'the-lead-singer', 'the-drummer', 'the-lead-guitarist', 'the-rhythm-guitarist', 'the-bassist'
+];
 
 // Valid audio effects
 const VALID_AUDIO = ['piano-note', 'distant-drums', 'blade-draw', 'impact', 'g-note'];
