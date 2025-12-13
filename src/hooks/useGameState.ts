@@ -34,6 +34,7 @@ export function useGameState(autoSave = true, autoSaveInterval = 30000): UseGame
   });
 
   const playTimeRef = useRef<number>(Date.now());
+  const stateRef = useRef<GameState>(state);
 
   // Track play time
   useEffect(() => {
@@ -51,16 +52,34 @@ export function useGameState(autoSave = true, autoSaveInterval = 30000): UseGame
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-save
+  // Keep latest state ref for auto-save
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
+  // Deterministic auto-save: Save immediately when state changes (if not on title screen)
+  useEffect(() => {
+    if (!autoSave) return;
+
+    // Don't save if we're on the title screen (no meaningful progress)
+    if (state.currentScene === 'title') return;
+
+    // Save immediately on state change
+    saveGame(state);
+  }, [autoSave, state]);
+
+  // Interval-based backup save (in case deterministic save misses something)
   useEffect(() => {
     if (!autoSave) return;
 
     const interval = setInterval(() => {
-      saveGame(state);
+      if (stateRef.current.currentScene !== 'title') {
+        saveGame(stateRef.current);
+      }
     }, autoSaveInterval);
 
     return () => clearInterval(interval);
-  }, [state, autoSave, autoSaveInterval]);
+  }, [autoSave, autoSaveInterval]);
 
   const goToScene = useCallback((sceneId: SceneId, dialogueId: string | null = null) => {
     setState(prev => changeScene(prev, sceneId, dialogueId));

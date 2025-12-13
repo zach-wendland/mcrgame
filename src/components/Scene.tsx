@@ -21,6 +21,7 @@ interface SceneProps {
   ambientSound?: string;
   onSceneEnd?: () => void;
   onChoiceMade?: (choice: DialogueChoice) => void;
+  onDialogueChange?: (dialogueId: string | null) => void;
   children?: React.ReactNode;
 }
 
@@ -33,6 +34,7 @@ export const Scene: React.FC<SceneProps> = ({
   ambientSound,
   onSceneEnd,
   onChoiceMade,
+  onDialogueChange,
   children
 }) => {
   const [isTransitioning, setIsTransitioning] = useState(true);
@@ -46,6 +48,9 @@ export const Scene: React.FC<SceneProps> = ({
   const handleNodeChange = useCallback((node: DialogueNode | null) => {
     // Update current speaker for character display
     setCurrentSpeaker(node?.speaker ?? null);
+
+    // Notify parent of dialogue change (for autosave)
+    onDialogueChange?.(node?.id ?? null);
 
     // Play sound effects from dialogue
     if (node?.effect?.playSound) {
@@ -68,7 +73,7 @@ export const Scene: React.FC<SceneProps> = ({
       setIsFading(true);
       // Fade will be cleared on next node or scene transition
     }
-  }, []);
+  }, [onDialogueChange]);
 
   // Clear fade when transitioning
   useEffect(() => {

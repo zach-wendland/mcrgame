@@ -4,6 +4,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import type { DialogueNode, DialogueSequence, DialogueChoice } from '@/types/game';
+import { getTypewriterSpeed } from '@/utils/testMode';
 
 interface UseDialogueReturn {
   currentNode: DialogueNode | null;
@@ -60,13 +61,23 @@ export function useDialogue(
     }
 
     const text = currentNode.text;
-    const speed = currentNode.effect?.typewriterSpeed === 'slow' ? 60
+    const baseSpeed = currentNode.effect?.typewriterSpeed === 'slow' ? 60
       : currentNode.effect?.typewriterSpeed === 'fast' ? 15
       : typewriterSpeed;
+
+    // Apply test mode - returns 0 if in test mode for instant display
+    const speed = getTypewriterSpeed(baseSpeed);
 
     setDisplayedText('');
     setIsTyping(true);
     onNodeChange?.(currentNode);
+
+    // If speed is 0 (test mode), show text immediately
+    if (speed === 0) {
+      setDisplayedText(text);
+      setIsTyping(false);
+      return;
+    }
 
     let index = 0;
     const timer = setInterval(() => {

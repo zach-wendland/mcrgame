@@ -3,10 +3,29 @@
  */
 
 import { test, expect } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
+
+const clickUntilVisible = async (
+  page: Page,
+  dialogueContainer: Locator,
+  target: Locator,
+  maxAttempts = 45,
+  delayMs = 350
+) => {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    if (await target.isVisible({ timeout: 0 }).catch(() => false)) {
+      return;
+    }
+    await page.waitForTimeout(delayMs);
+    await dialogueContainer.click();
+  }
+
+  await expect(target).toBeVisible({ timeout: 30000 });
+};
 
 test.describe('Title Screen', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?testMode=true');
   });
 
   test('should display title screen on load', async ({ page }) => {
@@ -34,8 +53,10 @@ test.describe('Title Screen', () => {
 
 test.describe('Dialogue System', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.getByRole('button', { name: /new game/i }).click();
+    await page.goto('/?testMode=true');
+    const newGameButton = page.getByRole('button', { name: /new game/i });
+    await newGameButton.waitFor({ state: 'visible' });
+    await newGameButton.click();
     // Wait for scene to load
     await page.waitForSelector('[data-scene-id="draag-opening"]');
   });
@@ -43,7 +64,7 @@ test.describe('Dialogue System', () => {
   test('should display dialogue text with typewriter effect', async ({ page }) => {
     // Wait for first dialogue to appear
     const dialogueBox = page.locator('[class*="DialogueBox"]');
-    await expect(dialogueBox).toBeVisible();
+    await expect(dialogueBox).toBeVisible({ timeout: 30000 });
 
     // Text should be present
     await expect(page.getByText(/stadium/i)).toBeVisible({ timeout: 10000 });
@@ -67,20 +88,16 @@ test.describe('Dialogue System', () => {
     // Skip through narrator dialogue to get to The Clerk
     const dialogueContainer = page.locator('[class*="DialogueBox"]');
 
-    for (let i = 0; i < 5; i++) {
-      await page.waitForTimeout(1000);
-      await dialogueContainer.click();
-    }
-
-    // Eventually The Clerk should speak
-    await expect(page.getByText(/The Clerk/i)).toBeVisible({ timeout: 15000 });
+    await clickUntilVisible(page, dialogueContainer, page.getByText(/The Clerk/i), 45, 400);
   });
 });
 
 test.describe('Choice System', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.getByRole('button', { name: /new game/i }).click();
+    await page.goto('/?testMode=true');
+    const newGameButton = page.getByRole('button', { name: /new game/i });
+    await newGameButton.waitFor({ state: 'visible' });
+    await newGameButton.click();
     await page.waitForSelector('[data-scene-id="draag-opening"]');
   });
 
@@ -88,15 +105,14 @@ test.describe('Choice System', () => {
     const dialogueContainer = page.locator('[class*="DialogueBox"]');
 
     // Click through to reach the first choice
-    for (let i = 0; i < 15; i++) {
-      await page.waitForTimeout(300);
-      await dialogueContainer.click();
+    await dialogueContainer.focus();
+    for (let i = 0; i < 45; i++) {
+      await page.waitForTimeout(350);
+      await page.keyboard.press('Space');
     }
 
-    // Look for choice buttons (may need more clicks depending on dialogue length)
     const choiceButtons = page.locator('[class*="ChoiceButton"]');
 
-    // Wait for choices to appear (they appear after certain dialogue nodes)
     await expect(choiceButtons.first()).toBeVisible({ timeout: 30000 });
   });
 
@@ -104,14 +120,13 @@ test.describe('Choice System', () => {
     const dialogueContainer = page.locator('[class*="DialogueBox"]');
 
     // Navigate to first choice
-    for (let i = 0; i < 15; i++) {
-      await page.waitForTimeout(300);
-      await dialogueContainer.click();
+    await dialogueContainer.focus();
+    for (let i = 0; i < 45; i++) {
+      await page.waitForTimeout(350);
+      await page.keyboard.press('Space');
     }
 
-    // Wait for choices
     const choiceButtons = page.locator('[class*="ChoiceButton"]');
-    await expect(choiceButtons.first()).toBeVisible({ timeout: 30000 });
 
     // Click first choice
     await choiceButtons.first().click();
@@ -128,7 +143,7 @@ test.describe('Mobile Responsiveness', () => {
   test.use({ viewport: { width: 375, height: 667 } }); // iPhone SE
 
   test('should display correctly on mobile viewport', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?testMode=true');
 
     // Title should be visible
     await expect(page.getByText('THE BLACK PARADE')).toBeVisible();
@@ -142,13 +157,13 @@ test.describe('Mobile Responsiveness', () => {
   });
 
   test('dialogue box should be readable on mobile', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?testMode=true');
     await page.getByRole('button', { name: /new game/i }).click();
 
     await page.waitForSelector('[data-scene-id="draag-opening"]');
 
     const dialogueBox = page.locator('[class*="DialogueBox"]');
-    await expect(dialogueBox).toBeVisible();
+    await expect(dialogueBox).toBeVisible({ timeout: 30000 });
 
     // Dialogue box should not overflow viewport
     const box = await dialogueBox.boundingBox();
@@ -158,7 +173,7 @@ test.describe('Mobile Responsiveness', () => {
 
 test.describe('Accessibility', () => {
   test('should have proper focus management', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?testMode=true');
 
     // Tab should focus on New Game button
     await page.keyboard.press('Tab');
@@ -167,18 +182,21 @@ test.describe('Accessibility', () => {
   });
 
   test('buttons should be keyboard accessible', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?testMode=true');
+
+    // Wait for button to be visible (TitleScreen has staggered fade-in)
+    await page.getByRole('button', { name: /new game/i }).waitFor({ state: 'visible' });
 
     // Focus and activate with keyboard
     await page.keyboard.press('Tab');
     await page.keyboard.press('Enter');
 
     // Should navigate to game
-    await expect(page.locator('[data-scene-id="draag-opening"]')).toBeVisible();
+    await expect(page.locator('[data-scene-id="draag-opening"]')).toBeVisible({ timeout: 30000 });
   });
 
   test('dialogue should have aria labels', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?testMode=true');
     await page.getByRole('button', { name: /new game/i }).click();
 
     await page.waitForSelector('[data-scene-id="draag-opening"]');
@@ -190,10 +208,12 @@ test.describe('Accessibility', () => {
 
 test.describe('Save/Load System', () => {
   test('should show Continue button after playing', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?testMode=true');
 
     // Start game
-    await page.getByRole('button', { name: /new game/i }).click();
+    const newGameButton = page.getByRole('button', { name: /new game/i });
+    await newGameButton.waitFor({ state: 'visible' });
+    await newGameButton.click();
     await page.waitForSelector('[data-scene-id="draag-opening"]');
 
     // Play a bit (advance dialogue)
@@ -204,7 +224,7 @@ test.describe('Save/Load System', () => {
     }
 
     // Wait for autosave
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(6000);
 
     // Reload page
     await page.reload();

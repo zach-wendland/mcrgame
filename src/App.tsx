@@ -12,6 +12,7 @@ import {
   paradeMemoryDialogue,
   pierrotConfrontationDialogue
 } from '@/dialogue';
+import { isTestMode } from '@/utils/testMode';
 import './App.css';
 
 // Scene-specific CSS class names for backgrounds (defined in App.css)
@@ -45,14 +46,18 @@ const SCENE_ORDER: SceneId[] = [
 ];
 
 export const App: React.FC = () => {
+  // Use faster autosave interval in test mode (500ms vs 3000ms)
+  const autoSaveInterval = isTestMode() ? 500 : 3000;
+
   const {
     state,
     goToScene,
+    setDialogue,
     makeChoice,
     load,
     save,
     reset
-  } = useGameState(true, 30000);
+  } = useGameState(true, autoSaveInterval);
 
   // Escape key returns to title screen
   useEffect(() => {
@@ -134,6 +139,7 @@ export const App: React.FC = () => {
       dialogue={currentDialogue}
       onSceneEnd={handleSceneEnd}
       onChoiceMade={handleChoiceMade}
+      onDialogueChange={setDialogue}
     />
   );
 };
