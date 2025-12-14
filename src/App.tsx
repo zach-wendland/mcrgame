@@ -5,8 +5,10 @@
 import React, { useCallback, useMemo, useEffect } from 'react';
 import type { SceneId, DialogueChoice } from '@/types/game';
 import { useGameState } from '@/hooks/useGameState';
+import { useAssetPreloader } from '@/hooks/useAssetPreloader';
 import { TitleScreen } from '@/scenes/TitleScreen';
 import { Scene } from '@/components/Scene';
+import { LoadingScreen } from '@/components/LoadingScreen';
 import {
   draagOpeningDialogue,
   paradeMemoryDialogue,
@@ -46,6 +48,9 @@ const SCENE_ORDER: SceneId[] = [
 ];
 
 export const App: React.FC = () => {
+  // Asset preloading - blocks render until sprites are loaded
+  const { ready: assetsReady, progress, error, retry } = useAssetPreloader();
+
   // Use faster autosave interval in test mode (500ms vs 3000ms)
   const autoSaveInterval = isTestMode() ? 500 : 3000;
 
@@ -58,6 +63,12 @@ export const App: React.FC = () => {
     save,
     reset
   } = useGameState(true, autoSaveInterval);
+
+  // Show loading screen while assets are being preloaded
+  // Skip in test mode for faster tests
+  if (!assetsReady && !isTestMode()) {
+    return <LoadingScreen progress={progress} error={error} onRetry={retry} />;
+  }
 
   // Escape key returns to title screen
   useEffect(() => {
