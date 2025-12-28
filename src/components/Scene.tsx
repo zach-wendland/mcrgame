@@ -7,17 +7,17 @@ import type { SceneId, DialogueSequence, DialogueChoice, DialogueNode, Character
 import { useDialogue } from '@/hooks/useDialogue';
 import { DialogueBox } from './DialogueBox';
 import { PixiBackground } from './PixiBackground';
-import { PixiCharacter } from './PixiCharacter';
 import { CharacterRenderer } from './SpriteCharacter';
 import { BandSilhouette } from './BandSilhouette';
-import { hasSpriteSheet } from '@/utils/spriteSheet';
-import { audioManager } from '@/utils/audioManager';
 import styles from './Scene.module.css';
 
 interface SceneProps {
   sceneId: SceneId;
   backgroundImage: string;
   backgroundClass?: string;
+  sceneNumber?: number;
+  sceneCount?: number;
+  sceneLabel?: string;
   dialogue: DialogueSequence | null;
   music?: string;
   ambientSound?: string;
@@ -31,9 +31,10 @@ export const Scene: React.FC<SceneProps> = ({
   sceneId,
   backgroundImage,
   backgroundClass = '',
+  sceneNumber,
+  sceneCount,
+  sceneLabel,
   dialogue,
-  music,
-  ambientSound,
   onSceneEnd,
   onChoiceMade,
   onDialogueChange,
@@ -44,7 +45,9 @@ export const Scene: React.FC<SceneProps> = ({
   const [isShaking, setIsShaking] = useState(false);
   const [isFading, setIsFading] = useState(false);
   const [currentSpeaker, setCurrentSpeaker] = useState<CharacterId | null>(null);
+  const [choiceToast, setChoiceToast] = useState<string | null>(null);
   const shakeTimeoutRef = useRef<number | null>(null);
+  const choiceToastTimeoutRef = useRef<number | null>(null);
 
   // Memoize the node change callback to prevent infinite loops
   const handleNodeChange = useCallback((node: DialogueNode | null) => {
@@ -53,11 +56,6 @@ export const Scene: React.FC<SceneProps> = ({
 
     // Notify parent of dialogue change (for autosave)
     onDialogueChange?.(node?.id ?? null);
-
-    // Play sound effects from dialogue
-    if (node?.effect?.playSound) {
-      audioManager.playSfx(node.effect.playSound);
-    }
 
     // Trigger screen shake
     if (node?.effect?.screenShake) {
@@ -90,8 +88,23 @@ export const Scene: React.FC<SceneProps> = ({
       if (shakeTimeoutRef.current) {
         clearTimeout(shakeTimeoutRef.current);
       }
+      if (choiceToastTimeoutRef.current) {
+        clearTimeout(choiceToastTimeoutRef.current);
+      }
     };
   }, []);
+
+  const handleChoiceMade = useCallback((choice: DialogueChoice) => {
+    const trimmed = choice.text.length > 48 ? `${choice.text.slice(0, 48)}...` : choice.text;
+    setChoiceToast(`Choice recorded: ${trimmed}`);
+    if (choiceToastTimeoutRef.current) {
+      clearTimeout(choiceToastTimeoutRef.current);
+    }
+    choiceToastTimeoutRef.current = window.setTimeout(() => {
+      setChoiceToast(null);
+    }, 2000);
+    onChoiceMade?.(choice);
+  }, [onChoiceMade]);
 
   // Handle dialogue
   const {
@@ -103,7 +116,7 @@ export const Scene: React.FC<SceneProps> = ({
     selectChoice
   } = useDialogue(dialogue, {
     onSequenceEnd: onSceneEnd,
-    onChoiceMade,
+    onChoiceMade: handleChoiceMade,
     onNodeChange: handleNodeChange
   });
 
@@ -117,23 +130,6 @@ export const Scene: React.FC<SceneProps> = ({
     return () => clearTimeout(timer);
   }, [sceneId, backgroundImage]);
 
-  // Music management
-  useEffect(() => {
-    if (music) {
-      audioManager.playMusic(music);
-    }
-    return () => {
-      // Don't stop music on unmount - let new scene take over
-    };
-  }, [music]);
-
-  // Ambient sound
-  useEffect(() => {
-    if (ambientSound) {
-      audioManager.playSfx(ambientSound);
-    }
-  }, [ambientSound]);
-
   // Handle choice selection
   const handleChoiceSelect = useCallback((choiceId: string) => {
     selectChoice(choiceId);
@@ -141,6 +137,21 @@ export const Scene: React.FC<SceneProps> = ({
 
   // Determine which character to show based on current speaker
   const showCharacter = currentSpeaker && currentSpeaker !== 'narrator' && currentSpeaker !== 'crowd';
+  const showChoices = !isTyping && choices.length > 0;
+
+  const totalNodes = dialogue?.nodes.length ?? 0;
+  const currentIndex = currentNode && dialogue
+    ? dialogue.nodes.findIndex(node => node.id === currentNode.id)
+    : -1;
+  const lineLabel = totalNodes > 0 && currentIndex >= 0
+    ? `Line ${currentIndex + 1} / ${totalNodes}`
+    : null;
+  const sceneProgress = sceneNumber && sceneCount ? `Scene ${sceneNumber} / ${sceneCount}` : null;
+  const hintText = showChoices
+    ? 'Choose an option'
+    : isTyping
+    ? 'Click to skip typing'
+    : 'Click or press Enter/Space to continue';
 
   return (
     <div
@@ -160,25 +171,54 @@ export const Scene: React.FC<SceneProps> = ({
       {/* Overlay for atmosphere */}
       <div className={styles.overlay} aria-hidden="true" />
 
+      {/* Scene HUD */}
+      <div className={styles.hud} aria-live="polite">
+        <div className={styles.hudPanel}>
+          {sceneProgress && (
+            <div className={styles.hudItem}>
+              <span className={styles.hudLabel}>Progress</span>
+              <span className={styles.hudValue}>{sceneProgress}</span>
+            </div>
+          )}
+          <div className={styles.hudItem}>
+            <span className={styles.hudLabel}>Location</span>
+            <span className={styles.hudValue}>{sceneLabel ?? sceneId}</span>
+          </div>
+          {lineLabel && (
+            <div className={styles.hudItem}>
+              <span className={styles.hudLabel}>Dialogue</span>
+              <span className={styles.hudValue}>{lineLabel}</span>
+            </div>
+          )}
+        </div>
+
+        <div className={styles.hudPanel}>
+          <div className={styles.hudItem}>
+            <span className={styles.hudLabel}>Autosave</span>
+            <span className={styles.hudValue}>On</span>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.hudHint}>
+        {hintText} • Esc: Title
+      </div>
+
+      {choiceToast && (
+        <div className={styles.hudToast} role="status">
+          {choiceToast}
+        </div>
+      )}
+
       {/* Character sprite layer */}
       <div className={styles.characterLayer}>
         {showCharacter ? (
-          // Use sprite sheets when available, fall back to procedural
-          hasSpriteSheet(currentSpeaker) ? (
-            <CharacterRenderer
-              characterId={currentSpeaker}
-              emotion={currentNode?.emotion}
-              isActive={!isTransitioning}
-            />
-          ) : (
-            <PixiCharacter
-              characterId={currentSpeaker}
-              emotion={currentNode?.emotion}
-              isActive={!isTransitioning}
-            />
-          )
+          <CharacterRenderer
+            characterId={currentSpeaker}
+            emotion={currentNode?.emotion}
+            isActive={!isTransitioning}
+          />
         ) : (
-          /* Show band silhouette during narrator sections in scene 1 */
           <BandSilhouette
             isActive={!isTransitioning && !showCharacter}
             sceneId={sceneId}

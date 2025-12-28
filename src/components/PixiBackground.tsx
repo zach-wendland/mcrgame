@@ -82,6 +82,7 @@ export const PixiBackground: React.FC<PixiBackgroundProps> = ({
   const particlesRef = useRef<Particle[]>([]);
   const graphicsRef = useRef<Graphics | null>(null);
   const searchlightRef = useRef<{ angle: number; speed: number }>({ angle: 0, speed: 0.005 });
+  const timeRef = useRef<number>(0);
 
   const createParticle = useCallback((width: number, height: number, config: SceneConfig): Particle => {
     const speed = config.particleSpeed.min + Math.random() * (config.particleSpeed.max - config.particleSpeed.min);
@@ -190,7 +191,8 @@ export const PixiBackground: React.FC<PixiBackgroundProps> = ({
 
         // Draw glow effect for pierrot scene
         if (config.additionalEffects === 'glow') {
-          const pulseAlpha = 0.05 + Math.sin(Date.now() * 0.002) * 0.03;
+          timeRef.current += 16; // ~60fps
+          const pulseAlpha = 0.05 + Math.sin(timeRef.current * 0.002) * 0.03;
           g.circle(width / 2, height / 2, Math.min(width, height) * 0.4);
           g.fill({ color: 0x8b0000, alpha: pulseAlpha });
         }

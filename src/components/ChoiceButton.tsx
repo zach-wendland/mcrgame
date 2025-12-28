@@ -2,7 +2,7 @@
  * ChoiceButton - Individual dialogue choice button
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import type { DialogueChoice } from '@/types/game';
 import styles from './ChoiceButton.module.css';
 
@@ -13,7 +13,7 @@ interface ChoiceButtonProps {
   className?: string;
 }
 
-export const ChoiceButton: React.FC<ChoiceButtonProps> = ({
+export const ChoiceButton = memo<ChoiceButtonProps>(({
   choice,
   index,
   onClick,
@@ -32,9 +32,11 @@ export const ChoiceButton: React.FC<ChoiceButtonProps> = ({
     }
   };
 
+  const componentClass = `ChoiceButton ${styles.button} ${className}`.trim();
+
   return (
     <button
-      className={`${styles.button} ${className}`}
+      className={componentClass}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       type="button"
@@ -44,4 +46,4 @@ export const ChoiceButton: React.FC<ChoiceButtonProps> = ({
       <span className={styles.text}>{choice.text}</span>
     </button>
   );
-};
+});

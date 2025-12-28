@@ -3,7 +3,7 @@
  * Renders character name, dialogue text, and choice buttons
  */
 
-import React from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import type { CharacterId, DialogueChoice } from '@/types/game';
 import { CharacterName } from './CharacterName';
 import { ChoiceButton } from './ChoiceButton';
@@ -19,7 +19,7 @@ interface DialogueBoxProps {
   className?: string;
 }
 
-export const DialogueBox: React.FC<DialogueBoxProps> = ({
+export const DialogueBox = memo<DialogueBoxProps>(({
   speaker,
   text,
   isTyping,
@@ -29,6 +29,7 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
   className = ''
 }) => {
   const showChoices = !isTyping && choices.length > 0;
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleClick = () => {
     if (!showChoices) {
@@ -43,9 +44,18 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (!showChoices) {
+      containerRef.current?.focus();
+    }
+  }, [showChoices, text, isTyping]);
+
+  const componentClass = `DialogueBox ${styles.container} ${className}`.trim();
+
   return (
     <div
-      className={`${styles.container} ${className}`}
+      className={componentClass}
+      ref={containerRef}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       role="button"
@@ -87,4 +97,4 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
       )}
     </div>
   );
-};
+});
